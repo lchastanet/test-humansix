@@ -18,11 +18,22 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        $orders = $this->openOrdersFile();
+
         $user = new User();
         $user->setUsername('admin')->setPassword($this->encoder->hashPassword($user, 'S3cr3T+'));
 
         $manager->persist($user);
 
         $manager->flush();
+    }
+
+    public function openOrdersFile()
+    {
+        if (file_exists('data/orders.xml')) {
+            return simplexml_load_file('data/orders.xml');
+        }
+
+        exit('Echec lors de l\'ouverture du fichier' . PHP_EOL);
     }
 }
