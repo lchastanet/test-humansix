@@ -42,13 +42,13 @@ class Order
     private $customer;
 
     /**
-     * @ORM\ManyToMany(targetEntity=product::class, inversedBy="orders")
+     * @ORM\OneToMany(targetEntity=Cart::class, mappedBy="cartOrder", orphanRemoval=true)
      */
-    private $cart;
+    private $carts;
 
     public function __construct()
     {
-        $this->cart = new ArrayCollection();
+        $this->carts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -105,25 +105,31 @@ class Order
     }
 
     /**
-     * @return Collection|product[]
+     * @return Collection|Cart[]
      */
-    public function getCart(): Collection
+    public function getCarts(): Collection
     {
-        return $this->cart;
+        return $this->carts;
     }
 
-    public function addCart(product $cart): self
+    public function addCart(Cart $cart): self
     {
-        if (!$this->cart->contains($cart)) {
-            $this->cart[] = $cart;
+        if (!$this->carts->contains($cart)) {
+            $this->carts[] = $cart;
+            $cart->setCartOrder($this);
         }
 
         return $this;
     }
 
-    public function removeCart(product $cart): self
+    public function removeCart(Cart $cart): self
     {
-        $this->cart->removeElement($cart);
+        if ($this->carts->removeElement($cart)) {
+            // set the owning side to null (unless already changed)
+            if ($cart->getCartOrder() === $this) {
+                $cart->setCartOrder(null);
+            }
+        }
 
         return $this;
     }
