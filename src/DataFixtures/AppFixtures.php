@@ -5,6 +5,9 @@ namespace App\DataFixtures;
 use App\Entity\Customer;
 use App\Entity\Product;
 use App\Entity\User;
+use App\Entity\Order;
+use App\Entity\Cart;
+use DateTime;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -27,41 +30,42 @@ class AppFixtures extends Fixture
         $orders = $this->getOrdersData();
 
         foreach ($orders as $order => $orderContent) {
-            print_r($orderContent);
-
             $currentCustomer = $orderContent["customer"];
             $currentCart = $orderContent["cart"];
-            $customerId = $currentCustomer["@attributes"]["id"];
-            $currentCustomer = [$currentCustomer["firstname"], $currentCustomer["lastname"]];
 
-            if (!array_key_exists($customerId, $this->customerList)) {
-                $this->customerList[$customerId] = $currentCustomer;
-                $customer = new Customer();
-                $customer->setFirstname($currentCustomer[0])->setLastname($currentCustomer[1]);
+            $cutomer = $this->persistCustomer($manager, $currentCustomer);
 
-                $manager->persist($customer);
-            }
+            $order = new Order();
+            $orderDate = new DateTime($orderContent["orderDate"]);
+
+            $order->setCustomer($cutomer)
+                ->setOrderDate($orderDate)
+                ->setPrice($orderContent["price"])
+                ->setStatus($orderContent["status"]);
+
+            $manager->persist($order);
 
             foreach ($currentCart as $cart => $products) {
                 if (array_key_exists("@attributes", $products)) {
-                    $this->persistProducts($manager, $products);
+                    $this->persistProduct($manager, $products, $order);
                 } else {
                     foreach ($products as $subProducts) {
-                        $this->persistProducts($manager, $subProducts);
+                        $this->persistProduct($manager, $subProducts, $order);
                     }
                 }
             }
         }
 
         $user = new User();
-        $user->setUsername('admin')->setPassword($this->encoder->hashPassword($user, 'S3cr3T+'));
+        $user->setUsername('admin')
+            ->setPassword($this->encoder->hashPassword($user, 'S3cr3T+'));
 
         $manager->persist($user);
 
         $manager->flush();
     }
 
-    public function getOrdersData()
+    public function getOrdersData(): array
     {
         if (file_exists('data/orders.xml')) {
             $xml = simplexml_load_file('data/orders.xml');
@@ -74,17 +78,45 @@ class AppFixtures extends Fixture
         exit('Echec lors de l\'ouverture du fichier' . PHP_EOL);
     }
 
-    public function persistProducts($manager, $item): void
+    public function persistCustomer($manager, $currentCustomer): Customer
     {
-        $productId = $item["@attributes"]["sku"];
-        $currentProduct = [$item["name"], $item["quantity"], $item["price"]];
+        $customerId = $currentCustomer["@attributes"]["id"];
 
-        if (!array_key_exists($productId, $this->productList)) {
-            $this->productList[$productId] = $currentProduct;
-            $product = new Product();
-            $product->setSku($productId)->setName($currentProduct[0])->setQuantity($currentProduct[1])->setPrice($currentProduct[2]);
+        $customer = new Customer();
+        $customer->setFirstname($currentCustomer["firstname"])
+            ->setLastname($currentCustomer["lastname"]);
 
-            $manager->persist($product);
+        if (!array_key_exists($customerId, $this->customerList)) {
+            $this->customerList[$customerId] = $customer;
+            $manager->persist($customer);
+        } else {
+            $customer = $this->customerList[$customerId];
         }
+
+        return $customer;
+    }
+
+    public function persistProduct($manager, $item, $order): void
+    {
+        $productSku = $item["@attributes"]["sku"];
+
+        $product = new Product();
+        $product->setSku($productSku)
+            ->setName($item["name"])
+            ->setPrice($item["price"]);
+
+        if (!array_key_exists($productSku, $this->productList)) {
+            $this->productList[$productSku] = $product;
+            $manager->persist($product);
+        } else {
+            $product = $this->productList[$productSku];
+        }
+
+        $cart = new Cart();
+        $cart->setCartOrder($order)
+            ->setQuantity($item["quantity"])
+            ->addProduct($product);
+
+        $manager->persist($cart);
     }
 }
