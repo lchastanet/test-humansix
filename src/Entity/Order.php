@@ -6,6 +6,7 @@ use App\Repository\OrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=OrderRepository::class)
@@ -17,27 +18,32 @@ class Order
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"list_order"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"list_order"})
      */
     private $orderDate;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"list_order"})
      */
     private $status;
 
     /**
      * @ORM\Column(type="float")
+     * @Groups({"list_order"})
      */
     private $price;
 
     /**
-     * @ORM\ManyToOne(targetEntity=customer::class, inversedBy="orders")
+     * @ORM\ManyToOne(targetEntity=Customer::class, inversedBy="orders")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"list_order"})
      */
     private $customer;
 
@@ -92,12 +98,12 @@ class Order
         return $this;
     }
 
-    public function getCustomer(): ?customer
+    public function getCustomer(): ?Customer
     {
         return $this->customer;
     }
 
-    public function setCustomer(?customer $customer): self
+    public function setCustomer(?Customer $customer): self
     {
         $this->customer = $customer;
 

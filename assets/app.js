@@ -36,17 +36,14 @@ const router = new VueRouter({
         {
             path: "/",
             component: Home,
-            meta: { guest: true },
         },
         {
             path: "/orders-list",
             component: OrdersList,
-            meta: { guest: true },
         },
         {
             path: "/products-list",
             component: ProductsList,
-            meta: { guest: true },
         },
         {
             path: "/order-form",

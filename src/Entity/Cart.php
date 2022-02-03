@@ -25,7 +25,7 @@ class Cart
     private $quantity;
 
     /**
-     * @ORM\ManyToMany(targetEntity=product::class)
+     * @ORM\ManyToMany(targetEntity=Product::class)
      */
     private $product;
 
@@ -58,14 +58,14 @@ class Cart
     }
 
     /**
-     * @return Collection|product[]
+     * @return Collection|Product[]
      */
     public function getProduct(): Collection
     {
         return $this->product;
     }
 
-    public function addProduct(product $product): self
+    public function addProduct(Product $product): self
     {
         if (!$this->product->contains($product)) {
             $this->product[] = $product;
@@ -74,7 +74,7 @@ class Cart
         return $this;
     }
 
-    public function removeProduct(product $product): self
+    public function removeProduct(Product $product): self
     {
         $this->product->removeElement($product);
 
