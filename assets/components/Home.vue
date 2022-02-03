@@ -1,22 +1,54 @@
 <template>
-   <div class="px-4 py-5 my-5 text-center">
-    <h1 class="display-5 fw-bold">Centered hero</h1>
-    <div class="col-lg-6 mx-auto">
-      <p class="lead mb-4">Quickly design and customize responsive mobile-first sites with Bootstrap, the world’s most popular front-end open source toolkit, featuring Sass variables and mixins, responsive grid system, extensive prebuilt components, and powerful JavaScript plugins.</p>
-      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-        <button type="button" class="btn btn-primary btn-lg px-4 gap-3">Primary button</button>
-        <button type="button" class="btn btn-outline-secondary btn-lg px-4">Secondary</button>
+   <form @submit.prevent="submit" id="form" class="m-auto mt-5">
+     <div v-if="showError" class="alert alert-danger alert-dismissible fade show" role="alert">
+       Invalid credentials !
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> 
       </div>
-    </div>
-  </div>
+      <div class="mb-3">
+        <label for="inputUsername" class="form-label">Login</label>
+        <input v-model="form.username" type="text" class="form-control" id="inputUsername" aria-describedby="username">
+      </div>
+      <div class="mb-3">
+        <label for="inputPassword" class="form-label">Password</label>
+        <input v-model="form.password"  type="password" class="form-control" id="inputPassword">
+      </div>
+    <button type="submit" class="btn btn-primary w-100">Connexion</button>
+  </form>
 </template>
 
 <script>
+   import { mapActions } from "vuex"
+
    export default {
-       name: "home"
+     name: "home",
+     data() {
+        return {
+          form: {
+            username: "",
+            password: "",
+          },
+          showError: false,
+          error: null
+        }
+    },
+    methods: {
+      ...mapActions(["LogIn"]),
+      async submit() {
+        const user = { username: this.form.username, password: this.form.password }
+        try {
+            await this.LogIn(user)
+            this.$router.push("/orders-list")
+            this.showError = false
+        } catch (error) {
+          this.showError = true
+        }
+      },
+    },
    }
 </script>
 
 <style scoped>
-
+  #form {
+    width: 300px;
+  }
 </style>
