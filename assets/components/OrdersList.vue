@@ -4,12 +4,12 @@
     <div class="container-fluid d-flex flex-row flex-wrap justify-content-around">
        <div v-for="order in orders" :key="order.id" class="card m-2" style="width: 18rem;">
          <div class="card-body">
-            <h5 class="card-title text-center">{{ order.id }}</h5>
+            <h5 class="card-title text-center">Order N°{{ order.id }}</h5>
             <p class="card-text fw-bold">Date : <span class="fw-normal">{{ order.orderDate | formatDate }}</span></p>
             <p class="card-text fw-bold">Status : <span class="fw-normal">{{ order.status }}</span></p>
             <p class="card-text fw-bold">Customer : <span class="fw-normal">{{ order.customer | completeName }}</span></p>
             <p class="card-text fw-bold">Price : <span class="fw-normal">{{ order.price | currencydecimal }} €</span></p>
-            <a href="#" class="btn btn-primary">Détails</a>
+            <a href="#" class="btn btn-primary">Details</a>
          </div>
        </div>
     </div>
