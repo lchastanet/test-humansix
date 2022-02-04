@@ -35,6 +35,24 @@ class OrderController extends AbstractController
         return $response;
     }
 
+    #[Route('/{id}', name: 'order_show', methods: ['GET'])]
+    public function show(Order $order, SerializerInterface $serializer): Response
+    {
+        $responseContent = $serializer->serialize(
+            $order,
+            'json',
+            ['groups' => 'show_order']
+        );
+
+        $response = new Response(
+            $responseContent,
+            Response::HTTP_OK,
+            ['content-type' => 'application/json']
+        );
+
+        return $response;
+    }
+
     #[Route('/new', name: 'order_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -52,14 +70,6 @@ class OrderController extends AbstractController
         return $this->renderForm('order/new.html.twig', [
             'order' => $order,
             'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'order_show', methods: ['GET'])]
-    public function show(Order $order): Response
-    {
-        return $this->render('order/show.html.twig', [
-            'order' => $order,
         ]);
     }
 }

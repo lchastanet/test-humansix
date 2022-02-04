@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
@@ -19,16 +20,19 @@ class Product
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
+     * @Groups({"show_order"})
      */
     private $sku;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"show_order"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="float")
+     * @Groups({"show_order"})
      */
     private $price;
 

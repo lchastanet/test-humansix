@@ -8,6 +8,7 @@ import store from "./store"
 import Home from "./components/Home"
 import OrdersList from "./components/OrdersList"
 import OrderForm from "./components/OrderForm"
+import OrderDetails from "./components/OrderDetails"
 import ProductsList from "./components/ProductsList"
 import NavBar from "./components/NavBar"
 
@@ -49,6 +50,11 @@ const router = new VueRouter({
             path: "/order-form",
             component: OrderForm,
             meta: { requiresAuth: true },
+        },
+        {
+            path: "/order-details/:id",
+            name: "orderDetails",
+            component: OrderDetails,
         },
     ],
 })

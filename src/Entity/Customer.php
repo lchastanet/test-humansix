@@ -23,13 +23,13 @@ class Customer
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"list_order"})
+     * @Groups({"list_order", "show_order"})
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"list_order"})
+     * @Groups({"list_order", "show_order"})
      */
     private $lastname;
 

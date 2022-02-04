@@ -6,6 +6,7 @@ use App\Repository\CartRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=CartRepository::class)
@@ -16,16 +17,19 @@ class Cart
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"show_order"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"show_order"})
      */
     private $quantity;
 
     /**
      * @ORM\ManyToMany(targetEntity=Product::class)
+     * @Groups({"show_order"})
      */
     private $product;
 

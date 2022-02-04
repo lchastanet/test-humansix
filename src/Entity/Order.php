@@ -18,37 +18,38 @@ class Order
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"list_order"})
+     * @Groups({"list_order", "show_order"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"list_order"})
+     * @Groups({"list_order", "show_order"})
      */
     private $orderDate;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"list_order"})
+     * @Groups({"list_order", "show_order"})
      */
     private $status;
 
     /**
      * @ORM\Column(type="float")
-     * @Groups({"list_order"})
+     * @Groups({"list_order", "show_order"})
      */
     private $price;
 
     /**
      * @ORM\ManyToOne(targetEntity=Customer::class, inversedBy="orders")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"list_order"})
+     * @Groups({"list_order", "show_order"})
      */
     private $customer;
 
     /**
      * @ORM\OneToMany(targetEntity=Cart::class, mappedBy="cartOrder", orphanRemoval=true)
+     * @Groups({"show_order"})
      */
     private $carts;
 
