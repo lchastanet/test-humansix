@@ -47,12 +47,14 @@
           />
         </div>
       </div>
-      <button class="btn btn-success mt-5 w-20">Order</button>
+      <button
+        v-if="quantity > 0 && customer > 0"
+        @click.prevent="sendOrder"
+        class="btn btn-success mt-5 w-20"
+      >
+        Order
+      </button>
     </form>
-    <div v-for="product in cart" :key="product.sku">
-      {{ product.sku }}
-      {{ product.quantity }}
-    </div>
   </div>
 </template>
 
@@ -72,6 +74,7 @@ export default {
       customer: "",
       products: null,
       error: null,
+      cart: [],
       price: 0,
       quantity: 0,
     }
@@ -93,8 +96,34 @@ export default {
       if (alreadyIn) {
         alreadyIn.quantity += 1
       } else {
-        this.cart.push({ sku: productSku, quantity: 1 })
+        this.cart.push({ sku: productSku, quantity: 1, price: payload.price })
       }
+
+      const sumQuantity = (total, current) => total + current.quantity
+      const sumPrice = (total, current) =>
+        total + current.price * current.quantity
+
+      this.quantity = this.cart.reduce(sumQuantity, 0)
+      this.price = this.cart.reduce(sumPrice, 0)
+    },
+    emptyCart() {
+      this.price = 0
+      this.quantity = 0
+      this.cart = []
+    },
+    async sendOrder() {
+      const order = {}
+      order.customer = this.customer
+      order.cart = []
+
+      this.cart.forEach((product) =>
+        order.cart.push({ sku: product.sku, quantity: product.quantity })
+      )
+
+      await axios
+        .post("order/new", order)
+        .then((res) => this.$router.push("/orders-list"))
+        .catch((error) => console.log(error))
     },
   },
   filters: {

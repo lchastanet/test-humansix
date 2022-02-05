@@ -56,7 +56,7 @@ export default {
       return `${value.firstname} ${value.lastname}`
     },
     formatDate(value) {
-      return moment(value).format("[le] MM/DD/YYYY [à] hh:mm")
+      return moment(value).format("[le] MM/DD/YYYY [à] HH:mm")
     },
   },
 }

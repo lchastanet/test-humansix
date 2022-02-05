@@ -10,7 +10,9 @@
     </p>
     <button
       v-if="page === 'order-form'"
-      @click.prevent="$emit('add-to-cart', { sku: product.sku })"
+      @click.prevent="
+        $emit('add-to-cart', { sku: product.sku, price: product.price })
+      "
       class="btn btn-primary"
     >
       Add to cart
