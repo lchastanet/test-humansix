@@ -18,18 +18,19 @@ class Customer
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"form_order"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"list_order", "show_order"})
+     * @Groups({"list_order", "show_order", "form_order"})
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"list_order", "show_order"})
+     * @Groups({"list_order", "show_order", "form_order"})
      */
     private $lastname;
 

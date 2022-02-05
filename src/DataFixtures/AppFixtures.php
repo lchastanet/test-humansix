@@ -31,7 +31,7 @@ class AppFixtures extends Fixture
 
         foreach ($orders as $order => $orderContent) {
             $currentCustomer = $orderContent["customer"];
-            $currentCart = $orderContent["cart"];
+            $currentCart = array_values($orderContent["cart"]);
 
             $cutomer = $this->persistCustomer($manager, $currentCustomer);
 
@@ -45,7 +45,7 @@ class AppFixtures extends Fixture
 
             $manager->persist($order);
 
-            foreach ($currentCart as $cart => $products) {
+            foreach ($currentCart as $products) {
                 if (array_key_exists("@attributes", $products)) {
                     $this->persistProduct($manager, $products, $order);
                 } else {

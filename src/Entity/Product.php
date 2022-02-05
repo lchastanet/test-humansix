@@ -20,19 +20,19 @@ class Product
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Groups({"show_order"})
+     * @Groups({"show_order", "form_order"})
      */
     private $sku;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"show_order"})
+     * @Groups({"show_order", "form_order"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="float")
-     * @Groups({"show_order"})
+     * @Groups({"show_order", "form_order"})
      */
     private $price;
 
