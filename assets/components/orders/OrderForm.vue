@@ -7,6 +7,11 @@
 <script>
 export default {
   name: "orderForm",
+  data() {
+    return {
+      page: "order-form",
+    }
+  },
 }
 </script>
 

@@ -10,18 +10,7 @@
         class="card m-2"
         style="width: 18rem"
       >
-        <div class="card-body">
-          <h5 class="card-title text-center">{{ product.name }}</h5>
-          <p class="card-text fw-bold">
-            Sku : <span class="fw-normal">{{ product.sku }}</span>
-          </p>
-          <p class="card-text fw-bold">
-            Price :
-            <span class="fw-normal"
-              >{{ product.price | currencydecimal }} €</span
-            >
-          </p>
-        </div>
+        <ProductCard :product="product" />
       </div>
     </div>
   </div>
@@ -29,9 +18,13 @@
 
 <script>
 import axios from "axios"
+import ProductCard from "./ProductCard.vue"
 
 export default {
   name: "productsList",
+  components: {
+    ProductCard,
+  },
   data() {
     return {
       products: null,
