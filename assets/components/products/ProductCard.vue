@@ -10,7 +10,7 @@
     </p>
     <button
       v-if="page === 'order-form'"
-      @click="addToCart"
+      @click.prevent="$emit('add-to-cart', { sku: product.sku })"
       class="btn btn-primary"
     >
       Add to cart
@@ -22,8 +22,9 @@
 export default {
   name: "productCard",
   props: {
-    product: Array,
+    product: Object,
     required: true,
+    page: null,
   },
   filters: {
     currencydecimal(value) {
