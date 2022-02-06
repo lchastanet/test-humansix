@@ -29,9 +29,13 @@ class OrderController extends AbstractController
     }
 
     #[Route('/', name: 'order_index', methods: ['GET'])]
-    public function index(OrderRepository $orderRepository): Response
+    public function index(Request $request, OrderRepository $orderRepository): Response
     {
-        $orders = $orderRepository->findBy([], ['orderDate' => 'DESC']);
+        $orderedBy = $request->query->get('orderedBy');
+
+        $orderedBy = ($orderedBy === 'Older') ? 'ASC' : 'DESC';
+
+        $orders = $orderRepository->findBy([], ['orderDate' => $orderedBy]);
 
         $responseContent = $this->serializer->serialize(
             $orders,

@@ -24,8 +24,7 @@
 export default {
   name: "productCard",
   props: {
-    product: Object,
-    required: true,
+    product: { type: Object, required: true },
     page: null,
   },
   filters: {

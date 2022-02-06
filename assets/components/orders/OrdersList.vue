@@ -2,85 +2,59 @@
   <div class="px-4 my-5">
     <h1 class="display-5 fw-bold text-center mb-5">Orders List</h1>
     <div
-      class="container-fluid d-flex flex-row flex-wrap justify-content-around"
+      class="form-check form-switch d-flex flex-row justify-content-center p-0 mb-4"
     >
-      <div
-        v-for="order in orders"
-        :key="order.id"
-        class="card m-2"
-        style="width: 18rem"
-      >
-        <router-link
-          :to="{ name: 'orderDetails', params: { id: order.id } }"
-          class="hidden-link"
-        >
-          <div class="card-body">
-            <h5 class="card-title text-center">Order N°{{ order.id }}</h5>
-            <p class="card-text fw-bold">
-              Date :
-              <span class="fw-normal">{{ order.orderDate | formatDate }}</span>
-            </p>
-            <p class="card-text fw-bold">
-              Status :
-              <span class="fw-normal">{{ order.status }}</span>
-            </p>
-            <p class="card-text fw-bold">
-              Customer :
-              <span class="fw-normal">{{ order.customer | completeName }}</span>
-            </p>
-            <p class="card-text fw-bold">
-              Price :
-              <span class="fw-normal"
-                >{{ order.price | currencydecimal }} €</span
-              >
-            </p>
-          </div>
-        </router-link>
-      </div>
+      <input
+        v-model="orderedBy"
+        @change="changeListOrder"
+        class="form-check-input mx-1"
+        type="checkbox"
+        id="flexSwitchCheckDefault"
+      />
+      <label class="form-check-label mx-1" for="flexSwitchCheckDefault">{{
+        orderedByLabel
+      }}</label>
     </div>
+    <OrderCard v-if="orders" :orders="orders" :key="orderList" />
   </div>
 </template>
 
 <script>
-import moment from "moment"
+import OrderCard from "./OrderCard.vue"
 
 export default {
   name: "ordersList",
+  components: {
+    OrderCard,
+  },
   data() {
     return {
       orders: null,
       error: null,
+      orderedBy: false,
+      orderedByLabel: null,
+      orderList: 0,
     }
   },
   mounted() {
-    this.$axios
-      .get("order")
-      .then((res) => (this.orders = res.data))
-      .catch((err) => (this.error = err))
+    this.getOrders()
   },
-  filters: {
-    currencydecimal(value) {
-      return value.toFixed(2)
+  methods: {
+    async getOrders() {
+      const orderedBy = this.orderedBy ? "Older" : "Newer"
+
+      this.orderedByLabel = orderedBy
+
+      await this.$axios
+        .get("order", { params: { orderedBy } })
+        .then((res) => (this.orders = res.data))
+        .catch((err) => (this.error = err))
     },
-    completeName(value) {
-      return `${value.firstname} ${value.lastname}`
-    },
-    formatDate(value) {
-      return moment(value).format("[Le] MM/DD/YYYY [à] HH:mm")
+    async changeListOrder() {
+      await this.getOrders()
+      this.orderList++
+      console.log(this.orderList)
     },
   },
 }
 </script>
-
-<style scoped>
-.hidden-link {
-  color: inherit;
-  text-decoration: none;
-}
-
-.card:hover {
-  cursor: pointer;
-  transform: scale(1.1);
-  transition: ease-in-out 300ms;
-}
-</style>
