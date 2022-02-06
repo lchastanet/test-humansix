@@ -13,17 +13,27 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/api/order')]
 class OrderController extends AbstractController
 {
-    #[Route('/', name: 'order_index', methods: ['GET'])]
-    public function index(OrderRepository $orderRepository, SerializerInterface $serializer): Response
-    {
-        $orders = $orderRepository->findAll();
+    protected $serializer;
+    protected $validator;
 
-        $responseContent = $serializer->serialize(
+    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator)
+    {
+        $this->serializer = $serializer;
+        $this->validator = $validator;
+    }
+
+    #[Route('/', name: 'order_index', methods: ['GET'])]
+    public function index(OrderRepository $orderRepository): Response
+    {
+        $orders = $orderRepository->findBy([], ['orderDate' => 'DESC']);
+
+        $responseContent = $this->serializer->serialize(
             $orders,
             'json',
             ['groups' => 'list_order']
@@ -41,10 +51,20 @@ class OrderController extends AbstractController
     #[Route('/new', name: 'order_new', methods: ['POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
         $data = $request->toArray();
         $customerId = intval($data["customer"], 10);
 
         $customer = $entityManager->getRepository(Customer::class)->find($customerId);
+
+        if (!$customer) {
+            return new Response(
+                $this->json(["error" => "User does not exists !"]),
+                Response::HTTP_BAD_REQUEST,
+                ['content-type' => 'application/json']
+            );
+        }
 
         $order = new Order();
         $order->setOrderDate(new DateTime())
@@ -73,6 +93,18 @@ class OrderController extends AbstractController
 
         $order->setPrice($total);
 
+        $errors = $this->validator->validate($order);
+
+        if (count($errors) > 0) {
+            $errorsString = (string) $errors;
+
+            return new Response(
+                $this->json($errorsString),
+                Response::HTTP_BAD_REQUEST,
+                ['content-type' => 'application/json']
+            );
+        }
+
         $entityManager->persist($order);
 
         $entityManager->flush();
@@ -83,7 +115,7 @@ class OrderController extends AbstractController
     }
 
     #[Route('/new', name: 'order_form', methods: ['GET'])]
-    public function newForm(EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
+    public function newForm(EntityManagerInterface $entityManager): Response
     {
         $productRepository = $entityManager->getRepository(Product::class);
         $customerRepository = $entityManager->getRepository(Customer::class);
@@ -91,7 +123,7 @@ class OrderController extends AbstractController
         $products = $productRepository->findAll();
         $customers = $customerRepository->findAll();
 
-        $responseContent = $serializer->serialize(
+        $responseContent = $this->serializer->serialize(
             ["customer" => $customers, "products" => $products],
             'json',
             ['groups' => 'form_order']
@@ -107,9 +139,9 @@ class OrderController extends AbstractController
     }
 
     #[Route('/{id}', name: 'order_show', methods: ['GET'])]
-    public function show(Order $order, SerializerInterface $serializer): Response
+    public function show(Order $order): Response
     {
-        $responseContent = $serializer->serialize(
+        $responseContent = $this->serializer->serialize(
             $order,
             'json',
             ['groups' => 'show_order']

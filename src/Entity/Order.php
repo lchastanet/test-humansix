@@ -45,6 +45,7 @@ class Order
      * @ORM\ManyToOne(targetEntity=Customer::class, inversedBy="orders")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"list_order", "show_order"})
+     * @Assert\NotNull(message="You have to provide an existing Customer")
      */
     private $customer;
 

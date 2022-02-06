@@ -1,7 +1,12 @@
 <template>
   <div class="px-4 my-5 text-center">
     <h1 class="display-5 fw-bold mb-5">Home</h1>
-    <form @submit.prevent="submit" id="form" class="m-auto mt-5">
+    <div v-if="User">
+      <h2>
+        Hello <em>{{ User }}</em> !
+      </h2>
+    </div>
+    <form v-else @submit.prevent="submit" id="form" class="m-auto mt-5">
       <div
         v-if="showError"
         class="alert alert-danger alert-dismissible fade show"
@@ -42,7 +47,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex"
+import { mapActions, mapGetters } from "vuex"
 
 export default {
   name: "home",
@@ -55,6 +60,9 @@ export default {
       showError: false,
       error: null,
     }
+  },
+  computed: {
+    ...mapGetters({ User: "StateUser" }),
   },
   methods: {
     ...mapActions(["LogIn"]),
