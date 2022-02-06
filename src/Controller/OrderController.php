@@ -117,6 +117,8 @@ class OrderController extends AbstractController
     #[Route('/new', name: 'order_form', methods: ['GET'])]
     public function newForm(EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
         $productRepository = $entityManager->getRepository(Product::class);
         $customerRepository = $entityManager->getRepository(Customer::class);
 

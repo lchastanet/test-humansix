@@ -42,7 +42,6 @@
 </template>
 
 <script>
-import axios from "axios"
 import moment from "moment"
 
 export default {
@@ -54,7 +53,7 @@ export default {
     }
   },
   mounted() {
-    axios
+    this.$axios
       .get("order")
       .then((res) => (this.orders = res.data))
       .catch((err) => (this.error = err))

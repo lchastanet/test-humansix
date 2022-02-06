@@ -17,7 +17,6 @@
 </template>
 
 <script>
-import axios from "axios"
 import ProductCard from "./ProductCard.vue"
 
 export default {
@@ -32,7 +31,7 @@ export default {
     }
   },
   mounted() {
-    axios
+    this.$axios
       .get("product")
       .then((res) => (this.products = res.data))
       .catch((err) => (this.error = err))

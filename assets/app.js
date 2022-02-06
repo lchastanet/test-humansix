@@ -16,7 +16,9 @@ Vue.use(VueRouter)
 
 axios.defaults.withCredentials = true
 axios.defaults.baseURL = "http://localhost:8000/api/"
-
+axios.defaults.headers.common = {
+  Authorization: `Bearer ${localStorage.getItem("token")}`,
+}
 axios.interceptors.response.use(undefined, function (error) {
   if (error) {
     const originalRequest = error.config
@@ -29,6 +31,8 @@ axios.interceptors.response.use(undefined, function (error) {
 })
 
 Vue.config.productionTip = false
+
+Vue.prototype.$axios = axios
 
 const router = new VueRouter({
   mode: "history",

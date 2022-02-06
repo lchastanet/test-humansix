@@ -59,7 +59,6 @@
 </template>
 
 <script>
-import axios from "axios"
 import ProductCard from "../products/ProductCard.vue"
 
 export default {
@@ -80,7 +79,7 @@ export default {
     }
   },
   mounted() {
-    axios
+    this.$axios
       .get("order/new")
       .then((res) => {
         this.customers = res.data.customer
@@ -120,7 +119,7 @@ export default {
         order.cart.push({ sku: product.sku, quantity: product.quantity })
       )
 
-      await axios
+      await this.$axios
         .post("order/new", order)
         .then((res) => this.$router.push("/orders-list"))
         .catch((error) => console.log(error))
